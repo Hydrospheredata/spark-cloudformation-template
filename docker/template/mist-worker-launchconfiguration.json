@@ -1,0 +1,252 @@
+{"LC__TYPE____NAMESPACE__":{
+    "Type": "AWS::AutoScaling::LaunchConfiguration",
+    "Properties": {
+      "ImageId": {
+        "Fn::FindInMap": [
+          "EcsAmiMap",
+          {
+            "Ref": "AWS::Region"
+          },
+          "AMI"
+        ]
+      },
+      "InstanceType": {
+        "Ref": "SparkInstanceType"
+      },
+      "AssociatePublicIpAddress": true,
+      "IamInstanceProfile": {
+        "Ref": "EcsInstanceProfile"
+      },
+      "KeyName": {
+        "Ref": "KeyName"
+      },
+      "SecurityGroups": [
+        {
+          "Ref": "InstanceSecurityGroup"
+        }
+      ],
+      "SpotPrice":"__SPOT_PRICE__",
+      "UserData": {
+        "Fn::Base64": {
+          "Fn::Join": [
+            "\n",
+            [
+              "#!/bin/bash -ex\n",
+              "yum install -y aws-cfn-bootstrap\n",
+              {
+                "Fn::Join": [
+                  " ",
+                  [
+                    "/opt/aws/bin/cfn-init",
+                    "--verbose",
+                    "--stack",
+                    {
+                      "Ref": "AWS::StackName"
+                    },
+                    "--region",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "--resource",
+                    "LC__TYPE____NAMESPACE__"
+                  ]
+                ]
+              },
+              "\n",
+              "/usr/local/bin/mount_efs"
+            ]
+          ]
+        }
+      }
+    },
+    "Metadata": {
+      "AWS::CloudFormation::Init": {
+        "config": {
+          "packages": {
+            "yum": {
+              "jq": [],
+              "nfs-utils": []
+            },
+            "python": {
+              "awscli": []
+            }
+          },
+          "files": {
+            "/etc/ecs/ecs.config": {
+              "content": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "ECS_CLUSTER=",
+                    {
+                      "Ref": "EcsCluster"
+                    },
+                    "\n",
+                    "STACK_NAME=",
+                    {
+                      "Ref": "AWS::StackName"
+                    },
+                    "\n",
+                    "EFS_NAME=",
+                    {
+                      "Ref": "EFSNameTag"
+                    },
+                    "\n",
+                    "ECS_INSTANCE_ATTRIBUTES={",
+                    "\"MIST_ROLE\":\"__INSTANCE_ROLE__\"",
+                    ",\"MIST_NAMESPACE\":\"__NAMESPACE__\"",
+                    "}",
+                    "\n",
+                    "ROOT_URL_DOWNLOAD=",
+                    {
+                      "Ref": "RootUrlDownload"
+                    },
+                    "\n",
+                    "MIST_VERSION=",
+                    {
+                      "Ref": "MistVersion"
+                    },
+                    "\n",
+                    "SPARK_VERSION=",
+                    {
+                      "Ref": "SparkVersion"
+                    }
+                  ]
+                ]
+              }
+            },
+            "/etc/init/ecs.override": {
+              "source": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    {
+                      "Ref": "RootUrlDownload"
+                    },
+                    "weave",
+                    "ecs.override"
+                  ]
+                ]
+              }
+            },
+            "/etc/init/weave.conf": {
+              "source": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    {
+                      "Ref": "RootUrlDownload"
+                    },
+                    "weave",
+                    "weave.conf"
+                  ]
+                ]
+              }
+            },
+            "/etc/weave/run.sh": {
+              "source": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    {
+                      "Ref": "RootUrlDownload"
+                    },
+                    "weave",
+                    "run.sh"
+                  ]
+                ]
+              },
+              "mode": "000755"
+            },
+            "/etc/weave/peers.sh": {
+              "source": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    {
+                      "Ref": "RootUrlDownload"
+                    },
+                    "weave",
+                    "peers.sh"
+                  ]
+                ]
+              },
+              "mode": "000755"
+            },
+            "/usr/local/bin/mount_efs": {
+              "source": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    {
+                      "Ref": "RootUrlDownload"
+                    },
+                    "efs",
+                    "mount_efs.sh"
+                  ]
+                ]
+              },
+              "mode": "000755"
+            },
+            "/usr/local/bin/weave": {
+              "source": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "https://github.com/weaveworks/weave/releases/download",
+                    "v1.9.5",
+                    "weave"
+                  ]
+                ]
+              },
+              "mode": "000755"
+            }
+          }
+        }
+      }
+    }
+  },
+  "ASGroup__TYPE____NAMESPACE__":{
+    "Type": "AWS::AutoScaling::AutoScalingGroup",
+    "Properties": {
+      "VPCZoneIdentifier": [
+        {
+          "Fn::Join": [
+            ",",
+            [
+              {
+                "Ref": "Subnet2"
+              },
+              {
+                "Ref": "Subnet1"
+              }
+            ]
+          ]
+        }
+      ],
+      "LaunchConfigurationName": {
+        "Ref": "LC__TYPE____NAMESPACE__"
+      },
+      "MinSize": "__INSTANCE_COUNT__",
+      "MaxSize": "__INSTANCE_COUNT__",
+      "DesiredCapacity": "__INSTANCE_COUNT__",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": {
+            "Fn::Join": [
+              "",
+              [
+                "ECS Instance - ",
+                {
+                  "Ref": "AWS::StackName"
+                }
+              ]
+            ]
+          },
+          "PropagateAtLaunch": "true"
+        }
+      ]
+    }
+  }
+}
