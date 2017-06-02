@@ -19,14 +19,13 @@ DIR_TGT=/mnt/efs
 
 mkdir -p $DIR_TGT
 #Mount EFS file system
+echo "mount -t nfs4 $DIR_SRC:/ $DIR_TGT"
 mount -t nfs4 $DIR_SRC:/ $DIR_TGT
 #Backup fstab
 cp -p /etc/fstab /etc/fstab.back-$(date +%F)
 #Append line to fstab
 echo -e "$DIR_SRC:/ \t\t $DIR_TGT \t\t nfs \t\t defaults \t\t 0 \t\t 0" | tee -a /etc/fstab
 
-service docker stop
-service docker start
 #Create folders if this needs
 if [ ! -d "$DIR_TGT/mist-configs" ]; then
     mkdir $DIR_TGT/mist-configs
@@ -36,3 +35,6 @@ if [ ! -d "$DIR_TGT/mist-configs" ]; then
     curl -O "$ROUTE_CONFIGURATION_FILE"
     curl -O "$CONFIGURATION_FILE"
 fi
+
+service docker stop
+service docker start

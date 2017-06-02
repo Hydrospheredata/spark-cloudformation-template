@@ -78,4 +78,23 @@ temp=$(echo $ORIGINAL_TEMPLATE | jq ".Resources = (.Resources + $ADD)")
 tfile=$(mktemp /tmp/foo.XXXXXXXXX)
 echo  $temp > $tfile
 
-aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://$tfile --parameters ParameterKey=KeyName,UsePreviousValue=true ParameterKey=EcsClusterName,UsePreviousValue=true ParameterKey=EcsInstanceType,UsePreviousValue=true ParameterKey=RootUrlDownload,UsePreviousValue=true ParameterKey=MistVersion,UsePreviousValue=true ParameterKey=SparkVersion,UsePreviousValue=true ParameterKey=SparkSlavesCount,UsePreviousValue=true ParameterKey=SparkInstanceType,UsePreviousValue=true ParameterKey=EFSNameTag,UsePreviousValue=true --capabilities CAPABILITY_IAM
+aws cloudformation update-stack --stack-name $STACK_NAME --template-body file://$tfile --parameters \
+    ParameterKey=KeyName,UsePreviousValue=true \
+    ParameterKey=EcsClusterName,UsePreviousValue=true \
+    ParameterKey=EcsInstanceType,UsePreviousValue=true \
+    ParameterKey=RootUrlDownload,UsePreviousValue=true \
+    ParameterKey=MistVersion,UsePreviousValue=true \
+    ParameterKey=SparkVersion,UsePreviousValue=true \
+    ParameterKey=SparkSlavesCount,UsePreviousValue=true \
+    ParameterKey=SparkSpotPrice,UsePreviousValue=true \
+    ParameterKey=SparkInstanceType,UsePreviousValue=true \
+    ParameterKey=EFSNameTag,UsePreviousValue=true \
+    ParameterKey=RouteConfigurationFile,UsePreviousValue=true \
+    ParameterKey=ConfigurationFile,UsePreviousValue=true \
+    ParameterKey=MistImageName,UsePreviousValue=true \
+    ParameterKey=StartSparkCluster,UsePreviousValue=true \
+    ParameterKey=SSHLocation,UsePreviousValue=true \
+    ParameterKey=CIDRVPC,UsePreviousValue=true \
+    ParameterKey=CIDRSubnet1,UsePreviousValue=true \
+    ParameterKey=CIDRSubnet2,UsePreviousValue=true \
+    --capabilities CAPABILITY_IAM

@@ -35,13 +35,13 @@
     },
     "ConfigurationFile": {
       "Type": "String",
-      "Default": "$ROOT_URL_DOWNLOAD/mist-conf/default.conf",
+      "Default": "https://raw.githubusercontent.com/Hydrospheredata/spark-cloudformation-template/master/mist-conf/default.conf",
       "Description": "Mist configuration file",
       "MinLength": 1
     },
     "RouteConfigurationFile": {
       "Type": "String",
-      "Default": "$ROOT_URL_DOWNLOAD/mist-conf/router.conf",
+      "Default": "https://raw.githubusercontent.com/Hydrospheredata/spark-cloudformation-template/master/mist-conf/router.conf",
       "Description": "Mist routes configuration file",
       "MinLength": 1
     },
