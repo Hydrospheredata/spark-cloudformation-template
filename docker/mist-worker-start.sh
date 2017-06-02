@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 while [ "$1" != "" ]; do
     PARAM=`echo $1 | awk -F= '{print $1}'`
@@ -39,8 +39,7 @@ aws configure set default.region $EC2_REGION
 ORIGINAL_TEMPLATE=$(aws cloudformation get-template --stack-name $STACK_NAME | jq .TemplateBody)
 
 ADD="{}"
-if [ "$START_SPARK_CLUSTER"="yes" ];
-then
+if [ "$START_SPARK_CLUSTER" == "yes" ]; then
     ##add spark slaves
     launchConfiguration=$(cat $LC_TEMPLATE_FILE)
     launchConfiguration=$(echo $launchConfiguration | sed -e "s/__RESOURCE_NAME__/$launchCName/g")
