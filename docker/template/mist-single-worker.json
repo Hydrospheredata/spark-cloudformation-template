@@ -1,0 +1,113 @@
+{"WorkerTaskDefinition__NAMESPACE__": {
+    "Type": "AWS::ECS::TaskDefinition",
+    "DependsOn": [
+      "DescribeRole"
+    ],
+    "Properties": {
+      "TaskRoleArn": {
+        "Fn::GetAtt": [
+          "DescribeRole",
+          "Arn"
+        ]
+      },
+      "NetworkMode": "bridge",
+      "ContainerDefinitions": [
+        {
+          "Name": "mist-worker-__NAMESPACE__",
+          "MemoryReservation": "200",
+          "Image": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "MistImageName"
+                },
+                ":",
+                {
+                  "Ref": "MistVersion"
+                },
+                "-",
+                {
+                  "Ref": "SparkVersion"
+                }
+              ]
+            ]
+          },
+          "Command": [
+            "single-worker"
+          ],
+          "Essential": "true",
+          "Environment": [
+            {
+              "Name": "STACK_NAME",
+              "Value": {
+                "Ref": "AWS::StackName"
+              }
+            },
+            {
+              "Name": "RUN_OPTIONS",
+              "Value": "__RUN_OPTIONS__"
+            },
+            {
+              "Name": "NAMESPACE",
+              "Value": "__NAMESPACE__"
+            },
+            {
+              "Name": "MIST_CONFIG",
+              "Value": "__MIST_CONFIG__"
+            }
+          ],
+          "MountPoints": [
+            {
+              "ContainerPath": "/usr/share/mist/configs/",
+              "SourceVolume": "mist-configs"
+            },
+            {
+              "ContainerPath": "/jobs/",
+              "SourceVolume": "mist-jobs"
+            }
+          ]
+        }
+      ],
+      "Volumes": [
+        {
+          "Host": {
+            "SourcePath": "/mnt/efs/mist-jobs"
+          },
+          "Name": "mist-jobs"
+        },
+        {
+          "Host": {
+            "SourcePath": "/mnt/efs/mist-configs"
+          },
+          "Name": "mist-configs"
+        }
+      ]
+    }
+  },
+  "MistWorkerService__NAMESPACE__": {
+    "Type": "AWS::ECS::Service",
+    "DependsOn": [
+      "ASGroupWorker__NAMESPACE__",
+      "MistMasterService"
+    ],
+    "Properties": {
+      "PlacementConstraints": [
+        {
+          "Type": "memberOf",
+          "Expression": "attribute:MIST_ROLE == role_worker && attribute:MIST_NAMESPACE==__NAMESPACE__"
+        },
+        {
+          "Type": "distinctInstance"
+        }
+      ],
+      "Cluster": {
+        "Ref": "EcsCluster"
+      },
+      "DesiredCount": "1",
+      "TaskDefinition": {
+        "Ref": "WorkerTaskDefinition__NAMESPACE__"
+      }
+    }
+  }
+}

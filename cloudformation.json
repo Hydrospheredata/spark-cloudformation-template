@@ -46,8 +46,6 @@
         "0.11.0"
       ]
     },
-
-
     "SparkVersion": {
       "Type": "String",
       "Default": "2.1.0",
@@ -56,6 +54,14 @@
         "2.0.2",
         "1.6.2",
         "1.5.2"
+      ]
+    },
+    "StartSparkCluster": {
+      "Type": "String",
+      "Default": "yes",
+      "AllowedValues": [
+        "yes",
+        "no"
       ]
     },
     "SparkSlavesCount": {
@@ -766,6 +772,13 @@
                   "Ref": "SparkSlavesCount"
                 }
               },
+              {
+                "Name":"START_SPARK_CLUSTER",
+                "Value":{
+                  "Ref": "StartSparkCluster"
+                }
+              },
+
               {
                 "Name":"SPARK_SPOT_PRICE",
                 "Value":{
