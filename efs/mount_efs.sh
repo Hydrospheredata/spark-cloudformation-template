@@ -32,7 +32,7 @@ if [ ! -d "$DIR_TGT/mist-configs" ]; then
     mkdir $DIR_TGT/mist-configs
     cd $DIR_TGT/mist-configs
 
-    #copy files
-    curl -O $ROOT_URL_DOWNLOAD/mist-conf/default.conf
-    curl -O $ROOT_URL_DOWNLOAD/mist-conf/router.conf
+    #fetch files
+    curl -O $ROUTE_CONFIGURATION_FILE
+    curl -O $CONFIGURATION_FILE
 fi

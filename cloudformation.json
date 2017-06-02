@@ -29,8 +29,20 @@
     },
     "RootUrlDownload": {
       "Type": "String",
-      "Default": "https://raw.githubusercontent.com/Zajs/mist-cloudformation-template/master",
+      "Default": "https://raw.githubusercontent.com/Hydrospheredata/spark-cloudformation-template/master",
       "Description": "ECS configuration scripts",
+      "MinLength": 1
+    },
+    "ConfigurationFile": {
+      "Type": "String",
+      "Default": "$ROOT_URL_DOWNLOAD/mist-conf/default.conf",
+      "Description": "Mist configuration file",
+      "MinLength": 1
+    },
+    "RouteConfigurationFile": {
+      "Type": "String",
+      "Default": "$ROOT_URL_DOWNLOAD/mist-conf/default.conf",
+      "Description": "Mist routes configuration file",
       "MinLength": 1
     },
     "MistImageName": {
@@ -546,6 +558,16 @@
                       "ROOT_URL_DOWNLOAD=",
                       {
                         "Ref": "RootUrlDownload"
+                      },
+                      "\n",
+                      "ROUTE_CONFIGURATION_FILE=",
+                      {
+                        "Ref": "RouteConfigurationFile"
+                      },
+                      "\n",
+                      "CONFIGURATION_FILE=",
+                      {
+                        "Ref": "ConfigurationFile"
                       },
                       "\n",
                       "MIST_VERSION=",
