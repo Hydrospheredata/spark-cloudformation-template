@@ -9,7 +9,7 @@ EC2_REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/doc
 EFS_FILE_SYSTEM_ID=$(/usr/local/bin/aws efs describe-file-systems --region $EC2_REGION | jq '.FileSystems[]' | jq "select(.Name==\"${EFS_NAME}\")" | jq -r '.FileSystemId')
 
 #Check to see if the variable is set. If not, then exit.
-if [-z "$EFS_FILE_SYSTEM_ID"]; then
+if [ -z "$EFS_FILE_SYSTEM_ID" ]; then
  echo "ERROR: variable not set"
  exit
 fi
@@ -33,6 +33,6 @@ if [ ! -d "$DIR_TGT/mist-configs" ]; then
     cd $DIR_TGT/mist-configs
 
     #fetch files
-    curl -O $ROUTE_CONFIGURATION_FILE
-    curl -O $CONFIGURATION_FILE
+    curl -O "$ROUTE_CONFIGURATION_FILE"
+    curl -O "$CONFIGURATION_FILE"
 fi

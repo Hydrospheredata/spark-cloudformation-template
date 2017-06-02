@@ -41,7 +41,7 @@
     },
     "RouteConfigurationFile": {
       "Type": "String",
-      "Default": "$ROOT_URL_DOWNLOAD/mist-conf/default.conf",
+      "Default": "$ROOT_URL_DOWNLOAD/mist-conf/router.conf",
       "Description": "Mist routes configuration file",
       "MinLength": 1
     },
